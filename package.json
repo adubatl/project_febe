@@ -1,0 +1,13 @@
+{
+  "name": "project_febe",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Andrew Bogle (adubatl) <andrewbogle@sureapp.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "docker-compose up --build",
+    "start:frontend": "cd frontend && yarn start",
+    "start:backend": "cd backend && yarn start",
+    "start:pdf-renderer": "cd pdf-renderer && yarn start"
+  }
+}

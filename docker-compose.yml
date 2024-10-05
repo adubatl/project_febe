@@ -1,0 +1,40 @@
+services:
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile.base
+    image: project_febe_base
+
+  fe:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    image: project_febe_fe
+    depends_on:
+      - base
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:5000
+
+  be:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    image: project_febe_be
+    depends_on:
+      - base
+    ports:
+      - "5000:5000"
+    environment:
+      - PDF_RENDERER_URL=http://be:3000
+
+  application:
+    build:
+      context: ./application
+      dockerfile: Dockerfile
+    image: project_febe_application
+    depends_on:
+      - base
+    ports:
+      - "3001:3000"
