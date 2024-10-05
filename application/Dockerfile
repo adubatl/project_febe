@@ -1,4 +1,7 @@
-FROM project_febe_base AS build
+FROM project_febe_base
+
+COPY . .
+RUN yarn build
 
 RUN yarn global add serve
 
