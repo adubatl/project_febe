@@ -1,6 +1,9 @@
 FROM project_febe_base
 
 COPY . .
+
+WORKDIR /app/application
+
 RUN yarn build
 
 RUN yarn global add serve

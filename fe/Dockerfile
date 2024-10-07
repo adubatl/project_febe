@@ -1,6 +1,9 @@
 FROM project_febe_base
 
 COPY . .
+
+WORKDIR /app/fe
+
 RUN yarn build
 
 # Install Chrome for Puppeteer
