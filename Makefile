@@ -58,3 +58,7 @@ generate-types:
 	cd be && yarn generate-types
 	cd fe && yarn generate-types
 	cd application && yarn generate-types
+
+# Start the application independently
+start-application:
+	cd application && yarn start

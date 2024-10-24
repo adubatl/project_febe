@@ -13,7 +13,7 @@ services:
     depends_on:
       - base
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - REACT_APP_BACKEND_URL=http://localhost:5000
 
@@ -27,14 +27,4 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - PDF_RENDERER_URL=http://be:3000
-
-  application:
-    build:
-      context: ./application
-      dockerfile: Dockerfile
-    image: project_febe_application
-    depends_on:
-      - base
-    ports:
-      - "3001:3000"
+      - PDF_RENDERER_URL=http://fe:3001

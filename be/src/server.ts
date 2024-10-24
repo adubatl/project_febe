@@ -17,13 +17,15 @@ app.get("/render", async (req, res) => {
       message: "Hello from backend!",
       timestamp: new Date().toISOString(),
     };
-    await axios.post(`${frontendUrl}/setData`, data);
+    await axios.post(`${frontendUrl}/generate-pdf`, data);
 
     // Wait a bit for the frontend to update
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Render the page
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      executablePath: "/usr/bin/google-chrome",
+    });
     const page = await browser.newPage();
     await page.goto(frontendUrl);
 
@@ -38,6 +40,27 @@ app.get("/render", async (req, res) => {
   } catch (error) {
     console.error("Rendering error:", error);
     res.status(500).send("Error rendering the page");
+  }
+});
+
+app.post("/render-pdf", async (req, res) => {
+  try {
+    const data = req.body;
+    await axios.post(`${frontendUrl}/generate-pdf`, data);
+
+    // Wait for the frontend to generate the PDF
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Fetch the generated PDF
+    const pdfResponse = await axios.get(`${frontendUrl}/pdf`, {
+      responseType: "arraybuffer",
+    });
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.send(pdfResponse.data);
+  } catch (error) {
+    console.error("PDF generation error:", error);
+    res.status(500).send("Error generating PDF");
   }
 });
 

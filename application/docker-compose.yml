@@ -1,0 +1,8 @@
+services:
+  application:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: project_febe_application
+    ports:
+      - "3000:3000"

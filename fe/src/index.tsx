@@ -1,12 +1,11 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
+import ReactDOMServer from "react-dom/server";
+import App from "./ServerPDFDocument";
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+export function renderApp() {
+  return ReactDOMServer.renderToString(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+}

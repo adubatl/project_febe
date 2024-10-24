@@ -1,9 +1,8 @@
-FROM project_febe_base
+FROM node:18
 
 COPY . .
 
-WORKDIR /app/application
-
+RUN yarn install
 RUN yarn build
 
 RUN yarn global add serve

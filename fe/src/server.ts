@@ -1,30 +1,36 @@
 import express from "express";
-import path from "path";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import React from "react";
+import ReactPDF from "@react-pdf/renderer";
+import ServerPDFDocument from "./ServerPDFDocument";
 
 const app = express();
-const httpServer = createServer(app);
-const io = new Server(httpServer);
-
-const port = process.env.FE_PORT || 3001;
-
-app.use(express.static(path.join(__dirname, "..", "build")));
 app.use(express.json());
 
-// Endpoint to receive data from backend
-app.post("/setData", (req, res) => {
-  const data = req.body;
-  io.emit("newData", data); // Emit data to all connected clients
-  res.sendStatus(200);
+let pdfBuffer: Buffer | null = null;
+
+app.post("/generate-pdf", async (req, res) => {
+  try {
+    // Render the PDF document to a buffer
+    const pdfDoc = await ServerPDFDocument();
+    console.log("PDF document generated", pdfDoc);
+    pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
+    res.status(200).send("PDF generated");
+  } catch (error) {
+    console.error("Error generating PDF:", error);
+    res.status(500).send("Error generating PDF");
+  }
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "build", "index.html"));
+app.get("/pdf", (req, res) => {
+  if (pdfBuffer) {
+    console.log("PDF buffer found", pdfBuffer);
+    res.setHeader("Content-Type", "application/pdf");
+    res.send(pdfBuffer);
+  } else {
+    res.status(404).send("PDF not found");
+  }
 });
 
-httpServer.listen(port, () => {
-  console.log(`Frontend server is running on port ${port}`);
+app.listen(3001, () => {
+  console.log("Frontend server is running on port 3001");
 });
-
-export default app;
