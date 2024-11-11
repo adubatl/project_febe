@@ -4,62 +4,61 @@ import axios from "axios";
 import puppeteer from "puppeteer";
 
 const app = express();
-const port = process.env.PORT || 3000;
-const frontendUrl = "http://localhost:3001";
+const port = process.env.PORT || 5000;
+const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3001";
 
 app.use(cors());
 app.use(express.json());
 
-app.get("/render", async (req, res) => {
-  try {
-    // Send data to frontend
-    const data = {
-      message: "Hello from backend!",
-      timestamp: new Date().toISOString(),
-    };
-    await axios.post(`${frontendUrl}/generate-pdf`, data);
-
-    // Wait a bit for the frontend to update
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    // Render the page
-    const browser = await puppeteer.launch({
-      executablePath: "/usr/bin/google-chrome",
-    });
-    const page = await browser.newPage();
-    await page.goto(frontendUrl);
-
-    // Wait for content to load
-    await page.waitForSelector("pre");
-
-    const content = await page.content();
-
-    await browser.close();
-
-    res.send(content);
-  } catch (error) {
-    console.error("Rendering error:", error);
-    res.status(500).send("Error rendering the page");
-  }
-});
-
 app.post("/render-pdf", async (req, res) => {
   try {
     const data = req.body;
-    await axios.post(`${frontendUrl}/generate-pdf`, data);
+    console.log("BE received data:", data);
 
-    // Wait for the frontend to generate the PDF
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Send data to frontend for rendering
+    console.log("BE sending data to FE at:", frontendUrl);
+    await axios.post(`${frontendUrl}/render`, data);
+    console.log("BE successfully sent data to FEBE");
 
-    // Fetch the generated PDF
-    const pdfResponse = await axios.get(`${frontendUrl}/pdf`, {
-      responseType: "arraybuffer",
+    // Launch Puppeteer and generate PDF
+    console.log(
+      "BE launching Puppeteer with executable:",
+      process.env.PUPPETEER_EXECUTABLE_PATH
+    );
+    const browser = await puppeteer.launch({
+      headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
+    const page = await browser.newPage();
+    console.log("BE navigating to FE render page");
+    await page.on("console", (msg) =>
+      console.log("Browser console:", msg.text())
+    );
+    await page.on("error", (err) => console.error("Browser error:", err));
+    await page.goto(`${frontendUrl}/render`, {
+      waitUntil: "networkidle0",
+      timeout: 30000,
+    });
+
+    console.log("BE generating PDF");
+    const pdf = await page.pdf({
+      format: "a4",
+      printBackground: true,
+    });
+
+    await browser.close();
+    console.log("BE successfully generated PDF");
+
     res.setHeader("Content-Type", "application/pdf");
-    res.send(pdfResponse.data);
-  } catch (error) {
+    res.send(pdf);
+  } catch (error: any) {
     console.error("PDF generation error:", error);
+    if (error.response) {
+      console.error("Error response data:", error.response.data);
+      console.error("Error response status:", error.response.status);
+    }
     res.status(500).send("Error generating PDF");
   }
 });

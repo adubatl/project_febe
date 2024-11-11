@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "es2022",
+    "module": "es2022",
+    "moduleResolution": "node",
     "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "jsx": "react"
   },
-  "include": ["src/**/*", "server.ts"]
+  "include": ["src/**/*"]
 }

@@ -1,36 +1,51 @@
 import express from "express";
 import React from "react";
-import ReactPDF from "@react-pdf/renderer";
+import { renderToString } from "react-dom/server";
 import ServerPDFDocument from "./ServerPDFDocument";
+import * as dotenv from "dotenv";
+import { PDFContent } from "./types";
+import path from "path";
+
+dotenv.config();
 
 const app = express();
+const port = process.env.PORT || 3001;
+
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(express.json());
 
-let pdfBuffer: Buffer | null = null;
-
-app.post("/generate-pdf", async (req, res) => {
+app.post("/render", async (req, res) => {
   try {
-    // Render the PDF document to a buffer
-    const pdfDoc = await ServerPDFDocument();
-    console.log("PDF document generated", pdfDoc);
-    pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
-    res.status(200).send("PDF generated");
+    console.log("FE received render request with content:", req.body);
+    const content: PDFContent = req.body;
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${content.title || "PDF Document"}</title>
+          <style>
+            body { margin: 0; padding: 0; }
+            #root { width: 100%; height: 100vh; }
+          </style>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script>
+            window.__INITIAL_DATA__ = ${JSON.stringify(content)};
+          </script>
+          <script src="/bundle.js"></script>
+        </body>
+      </html>
+    `;
+    console.log("FE sending HTML response");
+    res.send(html);
   } catch (error) {
-    console.error("Error generating PDF:", error);
-    res.status(500).send("Error generating PDF");
+    console.error("FE render error:", error);
+    res.status(500).send("Error rendering content");
   }
 });
 
-app.get("/pdf", (req, res) => {
-  if (pdfBuffer) {
-    console.log("PDF buffer found", pdfBuffer);
-    res.setHeader("Content-Type", "application/pdf");
-    res.send(pdfBuffer);
-  } else {
-    res.status(404).send("PDF not found");
-  }
-});
-
-app.listen(3001, () => {
-  console.log("Frontend server is running on port 3001");
+app.listen(port, () => {
+  console.log(`Frontend server is running on port ${port}`);
 });

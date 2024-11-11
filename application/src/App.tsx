@@ -4,9 +4,17 @@ import axios from "axios";
 function App() {
   const handleButtonClick = async () => {
     try {
-      const response = await axios.post("http://localhost:3000/render-pdf", {
-        message: "Generate PDF",
-      });
+      const pdfContent = {
+        title: "Sample Document",
+        author: "Test User",
+        date: new Date().toLocaleDateString(),
+        body: "This is a sample PDF document generated with dynamic content.",
+      };
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_BE_URL}/render-pdf`,
+        pdfContent
+      );
       const pdfBlob = new Blob([response.data], { type: "application/pdf" });
       const pdfUrl = URL.createObjectURL(pdfBlob);
       window.open(pdfUrl);

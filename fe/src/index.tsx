@@ -1,11 +1,12 @@
 import React from "react";
 import ReactDOMServer from "react-dom/server";
-import App from "./ServerPDFDocument";
+import ServerPDFDocument from "./ServerPDFDocument";
+import { PDFContent } from "./types";
 
-export function renderApp() {
+export function renderApp(content: PDFContent) {
   return ReactDOMServer.renderToString(
     <React.StrictMode>
-      <App />
+      <ServerPDFDocument content={content} isClient={false} />
     </React.StrictMode>
   );
 }

@@ -1,9 +1,42 @@
 const path = require("path");
+const nodeExternals = require("webpack-node-externals");
 
-module.exports = {
-  entry: "./src/index.tsx",
+const serverConfig = {
+  target: "node",
+  externals: [nodeExternals()],
+  entry: "./src/server.ts",
   output: {
     path: path.resolve(__dirname, "dist"),
+    filename: "server.js",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: [
+              ["@babel/preset-env", { targets: { node: "current" } }],
+              "@babel/preset-react",
+              "@babel/preset-typescript",
+            ],
+          },
+        },
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+  },
+};
+
+const clientConfig = {
+  target: "web",
+  entry: "./src/client.tsx",
+  output: {
+    path: path.resolve(__dirname, "dist/public"),
     filename: "bundle.js",
   },
   module: {
@@ -13,6 +46,13 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
+          options: {
+            presets: [
+              "@babel/preset-env",
+              "@babel/preset-react",
+              "@babel/preset-typescript",
+            ],
+          },
         },
       },
     ],
@@ -20,11 +60,6 @@ module.exports = {
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "public"),
-    },
-    compress: true,
-    port: 3000,
-  },
 };
+
+module.exports = [serverConfig, clientConfig];

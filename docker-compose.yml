@@ -1,30 +1,46 @@
 services:
-  base:
+  application:
     build:
-      context: .
-      dockerfile: Dockerfile.base
-    image: project_febe_base
-
-  fe:
-    build:
-      context: ./fe
+      context: ./application
       dockerfile: Dockerfile
-    image: project_febe_fe
-    depends_on:
-      - base
+    image: project_febe_application
     ports:
-      - "3001:3001"
+      - "3000:3000"
     environment:
-      - REACT_APP_BACKEND_URL=http://localhost:5000
+      - REACT_APP_BE_URL=http://be:5000
+    networks:
+      - app-network
+    depends_on:
+      - be
 
   be:
     build:
       context: ./be
       dockerfile: Dockerfile
     image: project_febe_be
-    depends_on:
-      - base
     ports:
       - "5000:5000"
     environment:
-      - PDF_RENDERER_URL=http://fe:3001
+      - PORT=5000
+      - FRONTEND_URL=http://fe:3001
+    networks:
+      - app-network
+    depends_on:
+      - fe
+
+  fe:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    image: project_febe_fe
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - LANG=en_US.UTF-8
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
