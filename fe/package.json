@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@react-pdf/renderer": "^4.0.0",
+    "dotenv": "^16.4.5",
     "express": "^4.17.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -20,10 +21,12 @@
     "babel-loader": "^9.2.1",
     "typescript": "^5.6.2",
     "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   },
   "scripts": {
-    "build": "webpack --config webpack.config.js --mode production",
-    "start": "node dist/server.js"
+    "build": "webpack --config webpack.config.js --mode production && webpack --config webpack.server.config.js --mode production && node copy-html.js",
+    "start": "node dist/server.js",
+    "dev": "yarn build && yarn start"
   }
 }

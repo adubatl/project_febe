@@ -5,6 +5,7 @@ function App() {
   const handleButtonClick = async () => {
     try {
       const pdfContent = {
+        shouldRenderPdf: true,
         title: "Sample Document",
         author: "Test User",
         date: new Date().toLocaleDateString(),
