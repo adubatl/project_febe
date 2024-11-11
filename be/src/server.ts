@@ -54,8 +54,22 @@ app.post("/render-pdf", async (req, res) => {
       timeout: 30000,
     });
 
+    // Add detailed logging for the page content
+    const pageContent = await page.content();
+    console.log("Page HTML content:", pageContent);
+
+    // Log network requests
+    page.on("request", (request) =>
+      console.log("Browser request:", request.url())
+    );
+    page.on("response", (response) =>
+      console.log("Browser response:", response.url(), response.status())
+    );
+
+    // Add data attribute to help track rendering
     await page.evaluate((data) => {
-      window.postMessage(data, "*");
+      console.log("Injecting data:", data);
+      window.postMessage({ ...data, shouldRenderPdf: true }, "*");
     }, data);
 
     // Wait for the PDF viewer to be ready

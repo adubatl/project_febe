@@ -22,9 +22,23 @@ if (!container) {
 
 const root = createRoot(container!);
 
-// Initial render with default content
-console.log("Performing initial render with default content");
-root.render(<ServerPDFDocument content={defaultContent} />);
+// After root creation, before initial render
+console.log("Checking for existing PDF data");
+fetch("/current-pdf-data")
+  .then((response) => response.json())
+  .then((data) => {
+    if (data && data.shouldRenderPdf) {
+      console.log("Found existing PDF data:", data);
+      root.render(<ServerPDFDocument content={data} />);
+    } else {
+      console.log("No existing PDF data, using default");
+      root.render(<ServerPDFDocument content={defaultContent} />);
+    }
+  })
+  .catch((error) => {
+    console.error("Error fetching PDF data:", error);
+    root.render(<ServerPDFDocument content={defaultContent} />);
+  });
 
 // Listen only for PDF content messages
 console.log("Setting up message listener for PDF content");
