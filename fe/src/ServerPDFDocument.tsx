@@ -43,13 +43,12 @@ const styles = StyleSheet.create({
 
 interface ServerPDFDocumentProps {
   content: PDFContent;
-  isClient?: boolean;
 }
 
 const PDFDocument: React.FC<ServerPDFDocumentProps> = ({ content }) => (
   <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
+    <Page size="A4" style={styles.page} debug={true}>
+      <View style={styles.header} debug={true}>
         <Text style={styles.title}>{content.title || "Untitled Document"}</Text>
         {content.author && (
           <Text style={styles.metadata}>Author: {content.author}</Text>
@@ -58,25 +57,28 @@ const PDFDocument: React.FC<ServerPDFDocumentProps> = ({ content }) => (
           <Text style={styles.metadata}>Date: {content.date}</Text>
         )}
       </View>
-      <View>
+      <View debug={true}>
         <Text style={styles.body}>{content.body || "No content provided"}</Text>
       </View>
     </Page>
   </Document>
 );
 
-const ServerPDFDocument: React.FC<ServerPDFDocumentProps> = ({
-  content,
-  isClient,
-}) => {
-  if (isClient) {
-    return (
+const ServerPDFDocument: React.FC<ServerPDFDocumentProps> = ({ content }) => {
+  const [isReady, setIsReady] = React.useState(false);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsReady(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div data-ready={isReady}>
       <PDFViewer style={styles.viewer}>
         <PDFDocument content={content} />
       </PDFViewer>
-    );
-  }
-  return <PDFDocument content={content} />;
+    </div>
+  );
 };
 
 export default ServerPDFDocument;

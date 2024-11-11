@@ -33,19 +33,50 @@ app.post("/render-pdf", async (req, res) => {
 
     const page = await browser.newPage();
     console.log("BE navigating to FE render page");
-    await page.on("console", (msg) =>
-      console.log("Browser console:", msg.text())
+    page.on("console", (msg) => console.log("Browser console:", msg.text()));
+    page.on("pageerror", (err) => console.error("Browser page error:", err));
+    page.on("requestfailed", (request) =>
+      console.error(
+        `Browser request failed: ${request.url()} ${
+          request.failure()?.errorText
+        }`
+      )
     );
-    await page.on("error", (err) => console.error("Browser error:", err));
+
+    // Set viewport size to match A4 dimensions (in pixels)
+    await page.setViewport({
+      width: 794, // A4 width at 96 DPI
+      height: 1123, // A4 height at 96 DPI
+    });
+
     await page.goto(`${frontendUrl}/render`, {
-      waitUntil: "networkidle0",
+      waitUntil: ["networkidle0", "load", "domcontentloaded"],
       timeout: 30000,
     });
+
+    await page.evaluate((data) => {
+      window.postMessage(data, "*");
+    }, data);
+
+    // Wait for the PDF viewer to be ready
+    await page.waitForFunction(
+      () => {
+        const element = document.querySelector("[data-ready='true']");
+        return !!element;
+      },
+      { timeout: 10000 }
+    );
 
     console.log("BE generating PDF");
     const pdf = await page.pdf({
       format: "a4",
       printBackground: true,
+      margin: {
+        top: "20px",
+        right: "20px",
+        bottom: "20px",
+        left: "20px",
+      },
     });
 
     await browser.close();

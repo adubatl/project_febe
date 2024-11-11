@@ -2,8 +2,12 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import ServerPDFDocument from "./ServerPDFDocument";
 
-const content = window.__INITIAL_DATA__;
+// Initialize with empty content, will be updated when data arrives
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
-root.render(<ServerPDFDocument content={content} isClient={true} />);
+// Listen for messages from the parent window
+window.addEventListener("message", (event) => {
+  const content = event.data;
+  root.render(<ServerPDFDocument content={content} />);
+});

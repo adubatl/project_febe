@@ -6,7 +6,7 @@ import { PDFContent } from "./types";
 export function renderApp(content: PDFContent) {
   return ReactDOMServer.renderToString(
     <React.StrictMode>
-      <ServerPDFDocument content={content} isClient={false} />
+      <ServerPDFDocument content={content} />
     </React.StrictMode>
   );
 }
