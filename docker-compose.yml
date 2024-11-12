@@ -12,6 +12,8 @@ services:
       - app-network
     depends_on:
       - be
+    mem_limit: 1024M
+    cpus: 1
 
   be:
     build:
@@ -27,6 +29,8 @@ services:
       - app-network
     depends_on:
       - fe
+    mem_limit: 1024M
+    cpus: 1
 
   fe:
     build:
@@ -40,6 +44,8 @@ services:
       - LANG=en_US.UTF-8
     networks:
       - app-network
+    mem_limit: 1024M
+    cpus: 1
 
 networks:
   app-network:

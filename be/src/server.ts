@@ -12,19 +12,11 @@ app.use(express.json());
 
 app.post("/render-pdf", async (req, res) => {
   try {
-    const data = req.body;
-    console.log("BE received data:", data);
+    console.log("Step: 1/5 - Backend received PDF generation request");
 
-    // Send data to frontend for rendering
-    console.log("BE sending data to FE at:", frontendUrl);
-    await axios.post(`${frontendUrl}/render`, data);
-    console.log("BE successfully sent data to FEBE");
+    const response = await axios.post(`${frontendUrl}/render`, req.body);
 
-    // Launch Puppeteer and generate PDF
-    console.log(
-      "BE launching Puppeteer with executable:",
-      process.env.PUPPETEER_EXECUTABLE_PATH
-    );
+    console.log("Step: 4/5 - Launching puppeteer");
     const browser = await puppeteer.launch({
       headless: true,
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
@@ -32,84 +24,42 @@ app.post("/render-pdf", async (req, res) => {
     });
 
     const page = await browser.newPage();
-    console.log("BE navigating to FE render page");
-    page.on("console", (msg) => console.log("Browser console:", msg.text()));
-    page.on("pageerror", (err) => console.error("Browser page error:", err));
-    page.on("requestfailed", (request) =>
-      console.error(
-        `Browser request failed: ${request.url()} ${
-          request.failure()?.errorText
-        }`
-      )
-    );
-
-    // Set viewport size to match A4 dimensions (in pixels)
-    await page.setViewport({
-      width: 794, // A4 width at 96 DPI
-      height: 1123, // A4 height at 96 DPI
-    });
-
     await page.goto(`${frontendUrl}/render`, {
-      waitUntil: ["networkidle0", "load", "domcontentloaded"],
+      waitUntil: ["networkidle0"],
       timeout: 30000,
     });
 
-    // Add detailed logging for the page content
-    const pageContent = await page.content();
-    console.log("Page HTML content:", pageContent);
+    await page.evaluate((script) => {
+      eval(script);
+    }, response.data.script);
 
-    // Log network requests
-    page.on("request", (request) =>
-      console.log("Browser request:", request.url())
-    );
-    page.on("response", (response) =>
-      console.log("Browser response:", response.url(), response.status())
-    );
+    await page.waitForSelector("#root");
+    await page.waitForTimeout(1000);
 
-    // Add data attribute to help track rendering
-    await page.evaluate((data) => {
-      console.log("Injecting data:", data);
-      window.postMessage({ ...data, shouldRenderPdf: true }, "*");
-    }, data);
-
-    // Wait for the PDF viewer to be ready
-    await page.waitForFunction(
-      () => {
-        const element = document.querySelector("[data-ready='true']");
-        return !!element;
-      },
-      { timeout: 10000 }
-    );
-
-    console.log("BE generating PDF");
-    const pdf = await page.pdf({
+    console.log("Step: 5/5 - Generating PDF");
+    const pdfBuffer = await page.pdf({
       format: "a4",
       printBackground: true,
       margin: {
-        top: "20px",
-        right: "20px",
-        bottom: "20px",
-        left: "20px",
+        top: "30px",
+        right: "30px",
+        bottom: "30px",
+        left: "30px",
       },
     });
 
     await browser.close();
-    console.log("BE successfully generated PDF");
-
     res.setHeader("Content-Type", "application/pdf");
-    res.send(pdf);
-  } catch (error: any) {
+    res.setHeader("Content-Disposition", "inline; filename=document.pdf");
+    res.send(pdfBuffer);
+  } catch (error) {
     console.error("PDF generation error:", error);
-    if (error.response) {
-      console.error("Error response data:", error.response.data);
-      console.error("Error response status:", error.response.status);
-    }
     res.status(500).send("Error generating PDF");
   }
 });
 
 app.listen(port, () => {
-  console.log(`Backend server is running on port ${port}`);
+  console.log(`Backend server running on port ${port}`);
 });
 
 export default app;

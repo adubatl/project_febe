@@ -1,83 +1,33 @@
 import React from "react";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  PDFViewer,
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View } from "@react-pdf/renderer";
 import { PDFContent } from "./types";
-
-const styles = StyleSheet.create({
-  viewer: {
-    width: "100%",
-    height: "100vh",
-  },
-  page: {
-    flexDirection: "column",
-    backgroundColor: "#ffffff",
-    padding: 30,
-  },
-  header: {
-    marginBottom: 20,
-    borderBottom: "1px solid #333",
-    paddingBottom: 10,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  metadata: {
-    fontSize: 12,
-    color: "#666",
-    marginBottom: 5,
-  },
-  body: {
-    fontSize: 14,
-    lineHeight: 1.5,
-    textAlign: "justify",
-  },
-});
-
-interface ServerPDFDocumentProps {
+import { pdfStyles } from "./styles/pdf.styles";
+interface PDFDocumentProps {
   content: PDFContent;
 }
 
-const PDFDocument: React.FC<ServerPDFDocumentProps> = ({ content }) => (
-  <Document>
-    <Page size="A4" style={styles.page} debug={true}>
-      <View style={styles.header} debug={true}>
-        <Text style={styles.title}>{content.title || "Untitled Document"}</Text>
-        {content.author && (
-          <Text style={styles.metadata}>Author: {content.author}</Text>
-        )}
-        {content.date && (
-          <Text style={styles.metadata}>Date: {content.date}</Text>
-        )}
-      </View>
-      <View debug={true}>
-        <Text style={styles.body}>{content.body || "No content provided"}</Text>
-      </View>
-    </Page>
-  </Document>
-);
-
-const ServerPDFDocument: React.FC<ServerPDFDocumentProps> = ({ content }) => {
-  const [isReady, setIsReady] = React.useState(false);
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsReady(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
+const ServerPDFDocument: React.FC<PDFDocumentProps> = ({ content }) => {
   return (
-    <div data-ready={isReady}>
-      <PDFViewer style={styles.viewer}>
-        <PDFDocument content={content} />
-      </PDFViewer>
-    </div>
+    <Document>
+      <Page size="A4" style={pdfStyles.page} debug>
+        <View style={pdfStyles.header}>
+          <Text style={pdfStyles.title}>
+            {content.title || "Untitled Document"}
+          </Text>
+          {content.author && (
+            <Text style={pdfStyles.metadata}>Author: {content.author}</Text>
+          )}
+          {content.date && (
+            <Text style={pdfStyles.metadata}>Date: {content.date}</Text>
+          )}
+        </View>
+        <View>
+          <Text style={pdfStyles.body}>
+            {content.body || "No content provided"}
+          </Text>
+        </View>
+      </Page>
+    </Document>
   );
 };
 

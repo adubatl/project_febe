@@ -3,6 +3,18 @@ import { createRoot } from "react-dom/client";
 import ServerPDFDocument from "./ServerPDFDocument";
 import { PDFContent } from "./types";
 
+const container = document.getElementById("root");
+if (!container) throw new Error("Failed to find root element!");
+
+const root = createRoot(container);
+
+// Function to render PDF content
+const renderPDF = (content: PDFContent) => {
+  console.log("Rendering PDF with content:", JSON.stringify(content, null, 2));
+  root.render(<ServerPDFDocument content={content} />);
+};
+
+// Initial render with default content
 const defaultContent: PDFContent = {
   shouldRenderPdf: true,
   title: "Test Document",
@@ -11,45 +23,11 @@ const defaultContent: PDFContent = {
   body: "This is a test document for local development.",
 };
 
-console.log("Client initializing with default content:", defaultContent);
+renderPDF(defaultContent);
 
-const container = document.getElementById("root");
-if (!container) {
-  console.error("Failed to find root element!");
-} else {
-  console.log("Root element found, creating React root");
-}
-
-const root = createRoot(container!);
-
-// After root creation, before initial render
-console.log("Checking for existing PDF data");
-fetch("/current-pdf-data")
-  .then((response) => response.json())
-  .then((data) => {
-    if (data && data.shouldRenderPdf) {
-      console.log("Found existing PDF data:", data);
-      root.render(<ServerPDFDocument content={data} />);
-    } else {
-      console.log("No existing PDF data, using default");
-      root.render(<ServerPDFDocument content={defaultContent} />);
-    }
-  })
-  .catch((error) => {
-    console.error("Error fetching PDF data:", error);
-    root.render(<ServerPDFDocument content={defaultContent} />);
-  });
-
-// Listen only for PDF content messages
-console.log("Setting up message listener for PDF content");
+// Listen for postMessage events from the parent window
 window.addEventListener("message", (event) => {
-  console.log("Message received, checking content:", event.data);
   if (event.data?.shouldRenderPdf === true) {
-    console.log("Valid PDF content received, rendering");
-    root.render(<ServerPDFDocument content={event.data} />);
-  } else {
-    console.log("Ignoring non-PDF content message");
+    renderPDF(event.data);
   }
 });
-
-console.log("Client initialization complete");
