@@ -5,7 +5,6 @@ function App() {
   const handleButtonClick = async () => {
     try {
       const pdfContent = {
-        shouldRenderPdf: true,
         title: "Sample Document",
         author: "Test User",
         date: new Date().toLocaleDateString(),
@@ -14,8 +13,10 @@ function App() {
 
       const response = await axios.post(
         `${process.env.REACT_APP_BE_URL}/render-pdf`,
-        pdfContent
+        pdfContent,
+        { responseType: "blob" }
       );
+
       const pdfBlob = new Blob([response.data], { type: "application/pdf" });
       const pdfUrl = URL.createObjectURL(pdfBlob);
       window.open(pdfUrl);
