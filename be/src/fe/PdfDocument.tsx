@@ -28,7 +28,7 @@ interface PdfDocumentProps {
   body: string;
 }
 
-const PdfDocument: React.FC<PdfDocumentProps> = ({
+export const PdfDocument: React.FC<PdfDocumentProps> = ({
   title,
   author,
   date,
@@ -45,5 +45,3 @@ const PdfDocument: React.FC<PdfDocumentProps> = ({
     </Page>
   </Document>
 );
-
-export default PdfDocument;

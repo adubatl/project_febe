@@ -9,31 +9,28 @@ const __dirname = path.dirname(__filename);
 export default {
   entry: "./src/preview/index.tsx",
   output: {
-    path: path.resolve(__dirname, "dist/preview"),
+    path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
   },
   module: {
     rules: [
       {
         test: /\.(ts|tsx)$/,
-        use: "ts-loader",
-        exclude: /node_modules\/(?!yoga-layout)/,
-      },
-      {
-        test: /\.m?js/,
-        resolve: {
-          fullySpecified: false,
+        exclude: /node_modules\/(?!(yoga-layout)\/).*/,
+        use: {
+          loader: "ts-loader",
+          options: {
+            transpileOnly: true,
+          },
         },
       },
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js", ".mjs"],
-    fallback: {
-      crypto: false,
-      stream: false,
-      path: false,
-      fs: false,
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".mjs"],
+    extensionAlias: {
+      ".js": [".js", ".ts"],
+      ".mjs": [".mjs", ".mts"],
     },
   },
   plugins: [

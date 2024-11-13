@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { usePDF } from "@react-pdf/renderer";
 import { pdfjs, Document, Page } from "react-pdf";
-import PdfDocument from "../fe/PdfDocument";
+import { PdfDocument } from "../fe/PdfDocument";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -27,7 +27,7 @@ const PreviewApp = () => {
   if (instance.error) {
     return <div>Error: {instance.error}</div>;
   }
-  console.log("instance", instance);
+
   return (
     <div
       style={{

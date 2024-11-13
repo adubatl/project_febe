@@ -1,12 +1,13 @@
-FROM project_febe_base
+FROM node:18
 
 WORKDIR /app/be
 
-# Install dependencies for react-pdf
-RUN apt-get update \
-    && apt-get install -y \
+# Install dependencies for react-pdf and Chromium
+RUN apt-get update && \
+    apt-get install -y \
     libfontconfig1 \
     libfreetype6 \
+    chromium \
     && rm -rf /var/lib/apt/lists/*
 
 # Set environment variable to use system-installed Chromium
