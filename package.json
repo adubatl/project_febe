@@ -5,8 +5,6 @@
   "author": "Andrew Bogle (adubatl) <andrewbogle@sureapp.com>",
   "license": "MIT",
   "scripts": {
-    "start": "docker-compose up --build",
-    "start:backend": "cd backend && yarn start",
-    "start:pdf-renderer": "cd pdf-renderer && yarn start"
+    "start": "docker-compose up --build"
   }
 }

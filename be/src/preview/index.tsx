@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
-import { BlobProvider, pdf, usePDF } from "@react-pdf/renderer";
+import { usePDF } from "@react-pdf/renderer";
 import { pdfjs, Document, Page } from "react-pdf";
 import PdfDocument from "../fe/PdfDocument";
 
