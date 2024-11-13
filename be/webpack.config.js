@@ -14,6 +14,7 @@ export default {
   },
   module: {
     rules: [
+      { test: /\.css$/, use: "css-loader" },
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules\/(?!(yoga-layout)\/).*/,
