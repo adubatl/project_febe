@@ -1,16 +1,12 @@
 import React from "react";
 import axios from "axios";
 import "./App.css";
+import { sampleData } from "./sampleData";
 
 function App() {
   const handleButtonClick = async () => {
     try {
-      const pdfContent = {
-        title: "Sample Document",
-        author: "Bogle Bogle",
-        date: new Date().toLocaleDateString(),
-        body: "This is a sample PDF document generated with dynamic content.",
-      };
+      const pdfContent = sampleData;
 
       const response = await axios.post(
         `${process.env.REACT_APP_BE_URL}/render-pdf`,

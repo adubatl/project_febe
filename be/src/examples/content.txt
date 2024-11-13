@@ -1,0 +1,155 @@
+ <Layout>
+      <div className="wrapper">
+        <Header title="Auto Insurance Declarations Page" partner_code={partner_code} />
+
+        <main className="content">
+          <div className="top-section">
+            <div>
+              <p className="bold small">Policy Number</p>
+              <p className="bottom-space">{ policy_number }</p>
+              <p className="bold small">Policy Period</p>
+              <p className="bottom-space">
+                From { policy_starts_at }<br />
+                To { policy_ends_at } 12:01AM
+              </p>
+              <p className="bold small">Underwritten By</p>
+              <p>
+                { underwriter.name }<br />
+                { underwriter.address }<br />
+              </p>
+            </div>
+            <div>
+              <p className="bold small">Named Insured(s)</p>
+              <p className="wrap max-200">
+                { policyholder.name }<br />
+                {spouse && (
+                  <>{spouse.name}<br /></>
+                )}
+                { policyholder.phone_number }<br />
+                { policyholder.email }<br />
+                { policyholder.address }
+              </p>
+            </div>
+            <div>
+              <div className="fees-table-container">
+                <table>
+                  <tr className="fees-table-container-header">
+                    <td colSpan={2}>
+                      <p className="bold small">Premiums / Fees</p>
+                    </td>
+                  </tr>
+                  <tr className="border-premium-fees">
+                    <td>Full Term Policy Premium</td>
+                    <td className="text-right">
+                      { currency }{ policy_premium }
+                    </td>
+                  </tr>
+                  <tr className="border-premium-fees-dark">
+                    <td>Fees*</td>
+                    <td className="text-right">
+                      { currency }{ regulatory_charges }
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Total</td>
+                    <td className="text-right">
+                      { currency }{ policy_premium_and_fees }
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <div>
+                <div className="text-right">
+                  <p className="bold small">Monthly Charge</p>
+                  <p className="bold monthly-charge">{ currency }{ monthly_charge }</p>
+                </div>
+                <p className="small">* See information on additional fees below</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="spaced-section dont-break">
+            <div className="info-block">
+              <h2 className="primary-color bold">
+                Household Driver and Resident Information
+              </h2>
+              <p>
+                Are there persons 15 years of age or older not listed below who reside in your household (even if temporarily away from home), or who are guests staying in your home in excess of 185 days, or who regularly operate your vehicle(s) listed below more than 30 days per year? If so, please contact us or update your policy in the self-service portal to add these drivers to your policy. Your policy explains in more detail how the coverages provided under this policy are reduced or eliminated if an undisclosed driver is operating your vehicle at the time of an accident. Please read your policy carefully.
+              </p>
+            </div>
+
+            <div className="two-up two-up-spaced cf">
+              <div className="left">
+                <table className="bordered">
+                  <tr>
+                    <th>Name</th>
+                    <th className="text-right">
+                      Driver Status
+                    </th>
+                  </tr>
+                  {drivers_groups.map((driver) => (
+                  <tr key={driver.name}>
+                    <td>{ driver.name }</td>
+                    <td className="text-right">
+                      {driver.is_excluded ? 'Excluded' : 'Covered' }
+                    </td>
+                  </tr>
+                  ))}
+                  </table>
+              </div>
+            </div>
+          </div>
+
+          <div className="spaced-section dont-break">
+            <h2 className="primary-color bold no-pad">Vehicle Information</h2>
+
+            <div className="vehicle-info two-up two-up-spaced cf spaced-section">
+              <div className="left">
+                <table className="bordered">
+                  <tr>
+                    <th>Veh. #</th>
+                    <th>
+                      Year/Make/Model/VIN
+                    </th>
+                    <th className="text-right">
+                      Garaging ZIP Code
+                    </th>
+                  </tr>
+
+                  {vehicles_groups.map((vehicle, idx) => (
+                    <tr key={idx}>
+                      <td>{ idx }</td>
+                      <td>
+                        { vehicle.year } { vehicle.make } { vehicle.model }/
+                        <br />
+                        { vehicle.vin }
+                      </td>
+                      <td className="text-right">
+                        { vehicle.garaging_location.postal }
+                      </td>
+                    </tr>
+                  ))}
+                </table>
+              </div>
+
+            </div>
+          </div>
+
+          <div className="spaced-section dont-break">
+            <h2 className="primary-color bold no-pad">Discounts</h2>
+
+            <div className="two-up two-up-spaced cf spaced-section">
+              {/* {% include 'toggle/auto/policies/partials/discount_tables.html' %} */}
+            </div>
+
+            <p className="small">Information is effective { effective_since }</p>
+          </div>
+
+          <div className="spaced-section dont-break pagebreak">
+            <Header title="Auto Insurance Declarations Page" partner_code={partner_code} />
+
+            <h2 className="primary-color bold">Coverage Information</h2>
+          </div>
+        </main>
+      </div>
+    </Layout>

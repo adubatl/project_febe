@@ -14,7 +14,10 @@ export default {
   },
   module: {
     rules: [
-      { test: /\.css$/, use: "css-loader" },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+      },
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules\/(?!(yoga-layout)\/).*/,
@@ -28,7 +31,7 @@ export default {
     ],
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx", ".mjs"],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".mjs", ".css"],
     extensionAlias: {
       ".js": [".js", ".ts"],
       ".mjs": [".mjs", ".mts"],

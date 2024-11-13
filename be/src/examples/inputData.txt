@@ -1,0 +1,27 @@
+  partner_code: string;
+  policy_number: string;
+  policy_starts_at: string;
+  policy_ends_at: string;
+  underwriter: {
+    name: string;
+    address: string;
+    phone_number: string;
+    email: string;
+  },
+  policyholder: {
+    name: string;
+    address: string;
+    phone_number: string;
+    email: string;
+  },
+  spouse: {
+    name: string;
+  },
+  policy_premium: string;
+  currency: string;
+  regulatory_charges: string;
+  policy_premium_and_fees: string;
+  monthly_charge: string;
+  drivers_groups: { name: string, is_excluded: boolean }[];
+  vehicles_groups: { year: string, make: string, model: string, vin: string, garaging_location: { postal: string } }[];
+  effective_since: string;

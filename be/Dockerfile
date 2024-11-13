@@ -20,6 +20,9 @@ RUN yarn install
 COPY . .
 RUN yarn build
 
+# Copy static PDFs to the correct location relative to dist
+COPY src/staticPdfs ./staticPdfs/
+
 ENV PORT=5000
 
 CMD ["node", "dist/server.js"]
