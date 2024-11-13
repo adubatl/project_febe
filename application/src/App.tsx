@@ -1,12 +1,13 @@
 import React from "react";
 import axios from "axios";
+import "./App.css";
 
 function App() {
   const handleButtonClick = async () => {
     try {
       const pdfContent = {
         title: "Sample Document",
-        author: "Test User",
+        author: "Bogle Bogle",
         date: new Date().toLocaleDateString(),
         body: "This is a sample PDF document generated with dynamic content.",
       };
@@ -27,10 +28,10 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <div className="container">
         <h1>PDF Generation Test</h1>
         <button onClick={handleButtonClick}>Generate PDF</button>
-      </header>
+      </div>
     </div>
   );
 }
